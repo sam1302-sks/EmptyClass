@@ -6,35 +6,55 @@ import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Table(name = "class_schedule")
+@Table(name = "classroom_timetable")
+
 public class ClasRoom {
+
     @Id
-    private int roomNo;
-    private String date;
-    private String time;
+    private Long id;
 
+    private String classroom;
+    private String day;
+    private String timeSlot;
+    private String classInfo;
 
-    public int getRoomNo() {
-        return roomNo;
+    public Long getId() {
+        return id;
     }
 
-    public void setRoomNo(int roomNo) {
-        this.roomNo = roomNo;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public String getDate() {
-        return date;
+    public String getClassroom() {
+        return classroom;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setClassroom(String classroom) {
+        this.classroom = classroom;
     }
 
-    public String getTime() {
-        return time;
+    public String getDay() {
+        return day;
     }
 
-    public void setTime(String time) {
-        this.time = time;
+    public void setDay(String day) {
+        this.day = day;
+    }
+
+    public String getTimeSlot() {
+        return timeSlot;
+    }
+
+    public void setTimeSlot(String timeSlot) {
+        this.timeSlot = timeSlot;
+    }
+
+    public String getClassInfo() {
+        return classInfo;
+    }
+
+    public void setClassInfo(String classInfo) {
+        this.classInfo = classInfo;
     }
 }
