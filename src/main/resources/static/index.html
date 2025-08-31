@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudySpot - Find Empty Classrooms</title>
+    <style>
+        :root {
+            --bg-primary: #000000;
+            --bg-secondary: #111111;
+            --bg-tertiary: #1a1a1a;
+            --accent-color: #0070f3;
+            --accent-hover: #3291ff;
+            --text-primary: #ffffff;
+            --text-secondary: #eaeaea;
+            --text-tertiary: #999999;
+            --border-color: #333333;
+            --success-color: #28a745;
+            --error-color: #dc3545;
+            --warning-color: #ffc107;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.5rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--accent-color), var(--accent-hover));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .tagline {
+            font-size: 1rem;
+            color: var(--text-tertiary);
+            margin-top: 0.25rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .search-section {
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .search-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1rem;
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent-color);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(0, 112, 243, 0.3);
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-search {
+            align-self: flex-end;
+            grid-column: 1 / -1;
+            justify-self: center;
+            width: 200px;
+        }
+
+        .results-section {
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .no-results {
+            text-align: center;
+            color: var(--text-tertiary);
+            font-size: 1.1rem;
+            padding: 2rem 0;
+        }
+
+        .classroom-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .classroom-card {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .classroom-card:hover {
+            border-color: var(--accent-color);
+            transform: translateY(-3px);
+        }
+
+        .classroom-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .classroom-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .classroom-capacity {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .classroom-details {
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-item {
+            display: flex;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .detail-label {
+            font-weight: 500;
+            margin-right: 0.5rem;
+            min-width: 80px;
+            color: var(--text-secondary);
+        }
+
+        .detail-value {
+            color: var(--text-primary);
+        }
+
+        .btn-book {
+            width: 100%;
+            background-color: var(--success-color);
+            font-weight: 500;
+        }
+
+        .btn-book:hover {
+            background-color: #218838;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left-color: var(--accent-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: var(--success-color);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            font-weight: 500;
+        }
+
+        .toast.error {
+            background-color: var(--error-color);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 2rem;
+            color: var(--text-tertiary);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        @media (max-width: 768px) {
+            .search-form {
+                grid-template-columns: 1fr;
+            }
+
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            .logo {
+                font-size: 1.6rem;
+            }
+        }
+
+        /* Vercel-like subtle grid background */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
+            z-index: -1;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="header-content">
+        <div>
+            <div class="logo">StudySpot</div>
+            <div class="tagline">Find empty classrooms for your study sessions</div>
+        </div>
+    </div>
+</header>
+
+<main class="container">
+    <section class="search-section">
+        <h2 class="section-title">Find Available Classrooms</h2>
+        <form id="searchForm" class="search-form">
+            <div class="form-group">
+                <label for="date">Date</label>
+                <input type="date" id="date" name="date" required>
+            </div>
+            <div class="form-group">
+                <label for="startTime">Start Time</label>
+                <input type="time" id="startTime" name="start_time" required>
+            </div>
+            <div class="form-group">
+                <label for="endTime">End Time</label>
+                <input type="time" id="endTime" name="end_time" required>
+            </div>
+            <button type="submit" class="btn btn-search">Search Classrooms</button>
+        </form>
+    </section>
+
+    <section class="results-section">
+        <h2 class="section-title">Available Classrooms</h2>
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Searching for available classrooms...</p>
+        </div>
+        <div id="resultsContainer">
+            <div class="no-results">
+                <p>Enter your search criteria to find available classrooms.</p>
+            </div>
+        </div>
+    </section>
+</main>
+
+<div id="toast" class="toast">Booking successful!</div>
+
+<footer>
+    <div class="container">
+        <p>&copy; 2023 StudySpot - Empty Classroom Finder. All rights reserved.</p>
+    </div>
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set default date to today
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('date').value = today;
+
+        // Set default times (current hour and next hour)
+        const now = new Date();
+        const currentHour = now.getHours().toString().padStart(2, '0');
+        const nextHour = (now.getHours() + 1).toString().padStart(2, '0');
+        document.getElementById('startTime').value = `${currentHour}:00`;
+        document.getElementById('endTime').value = `${nextHour}:00`;
+
+        // Form submission handler
+        const searchForm = document.getElementById('searchForm');
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            searchClassrooms();
+        });
+    });
+
+    async function searchClassrooms() {
+        const date = document.getElementById('date').value;
+        const startTime = document.getElementById('startTime').value;
+        const endTime = document.getElementById('endTime').value;
+
+        // Basic validation
+        if (!date || !startTime || !endTime) {
+            showToast('Please fill in all fields', true);
+            return;
+        }
+
+        if (startTime >= endTime) {
+            showToast('End time must be after start time', true);
+            return;
+        }
+
+        // NEW VALIDATION: Check for one-hour duration
+        const startParts = startTime.split(':');
+        const endParts = endTime.split(':');
+        const startTotalMinutes = parseInt(startParts[0]) * 60 + parseInt(startParts[1]);
+        const endTotalMinutes = parseInt(endParts[0]) * 60 + parseInt(endParts[1]);
+        const durationInMinutes = endTotalMinutes - startTotalMinutes;
+
+        if (durationInMinutes !== 60) {
+            showToast('Time slot must be exactly one hour.', true);
+            return; // Stop the function here
+        }
+
+        // Show loading state
+        document.getElementById('loading').style.display = 'block';
+        document.getElementById('resultsContainer').innerHTML = '';
+
+        try {
+            // Make API call to your Spring Boot backend
+            const response = await fetch('/api/classrooms/available', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    date: date,
+                    startTime: startTime,
+                    endTime: endTime
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const classrooms = await response.json();
+            displayResults(classrooms);
+        } catch (error) {
+            console.error('Error fetching classrooms:', error);
+            document.getElementById('resultsContainer').innerHTML = `
+                <div class="no-results">
+                    <p>Error loading classrooms. Please try again later.</p>
+                </div>
+            `;
+            showToast('Failed to load classrooms', true);
+        } finally {
+            document.getElementById('loading').style.display = 'none';
+        }
+    }
+
+    function displayResults(classrooms) {
+        const resultsContainer = document.getElementById('resultsContainer');
+
+        if (!classrooms || classrooms.length === 0) {
+            resultsContainer.innerHTML = `
+                <div class="no-results">
+                    <p>No available classrooms found for your selected time.</p>
+                    <p>Try adjusting your search criteria.</p>
+                </div>
+            `;
+            return;
+        }
+
+        let html = '<div class="classroom-grid">';
+        classrooms.forEach(roomNumber => {
+            html += `
+                <div class="classroom-card">
+                    <div class="classroom-header">
+                        <h3 class="classroom-name">Room: ${roomNumber}</h3>
+                    </div>
+                </div>
+            `;
+        });
+        html += '</div>';
+        resultsContainer.innerHTML = html;
+    }
+
+    function showToast(message, isError = false) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.className = isError ? 'toast error show' : 'toast show';
+
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    }
+</script>
+</body>
+</html>
