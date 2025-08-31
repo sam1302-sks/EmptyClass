@@ -407,7 +407,7 @@
         const startTime = document.getElementById('startTime').value;
         const endTime = document.getElementById('endTime').value;
 
-        // Validate inputs
+        // Basic validation
         if (!date || !startTime || !endTime) {
             showToast('Please fill in all fields', true);
             return;
@@ -416,6 +416,18 @@
         if (startTime >= endTime) {
             showToast('End time must be after start time', true);
             return;
+        }
+
+        // NEW VALIDATION: Check for one-hour duration
+        const startParts = startTime.split(':');
+        const endParts = endTime.split(':');
+        const startTotalMinutes = parseInt(startParts[0]) * 60 + parseInt(startParts[1]);
+        const endTotalMinutes = parseInt(endParts[0]) * 60 + parseInt(endParts[1]);
+        const durationInMinutes = endTotalMinutes - startTotalMinutes;
+
+        if (durationInMinutes !== 60) {
+            showToast('Time slot must be exactly one hour.', true);
+            return; // Stop the function here
         }
 
         // Show loading state
@@ -431,8 +443,8 @@
                 },
                 body: JSON.stringify({
                     date: date,
-                    startTime: startTime, // Corrected parameter name
-                    endTime: endTime // Corrected parameter name
+                    startTime: startTime,
+                    endTime: endTime
                 })
             });
 
@@ -469,7 +481,6 @@
         }
 
         let html = '<div class="classroom-grid">';
-
         classrooms.forEach(roomNumber => {
             html += `
                 <div class="classroom-card">
@@ -479,7 +490,6 @@
                 </div>
             `;
         });
-
         html += '</div>';
         resultsContainer.innerHTML = html;
     }
